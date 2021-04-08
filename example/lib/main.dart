@@ -102,7 +102,7 @@ class _HomeState extends State<Home> {
         axisAlignment: isPortrait ? 0.0 : -1.0,
         openAxisAlignment: 0.0,
         actions: actions,
-        progress: true,
+        progress: model.isLoading,
         debounceDelay: const Duration(milliseconds: 500),
         onQueryChanged: model.onQueryChanged,
         scrollPadding: EdgeInsets.zero,
