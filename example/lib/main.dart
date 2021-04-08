@@ -19,7 +19,9 @@ void main() {
     ),
   );
 
-  runApp(
+  runApp(MyApp());
+
+  /* runApp(
     MaterialApp(
       title: 'Material Floating Search Bar Example',
       debugShowCheckedModeBanner: false,
@@ -39,7 +41,52 @@ void main() {
         ),
       ),
     ),
-  );
+  ); */
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: TestPage(),
+    );
+  }
+}
+
+class TestPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FloatingSearchBar(
+        transitionCurve: Curves.easeInOutCubic,
+        transition: CircularFloatingSearchBarTransition(),
+        physics: const BouncingScrollPhysics(),
+        builder: (context, _) => buildBody(),
+      ),
+    );
+  }
+
+  Widget buildBody() {
+    final time = DateTime.now();
+    print('BuildBody at ${time.second}:${time.millisecond}');
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Material(
+        child: Column(
+          children: List.generate(100, (index) => index.toString())
+              .map((e) => ListTile(
+                    title: Text(e),
+                  ))
+              .toList(),
+        ),
+      ),
+    );
+  }
 }
 
 class Home extends StatefulWidget {
