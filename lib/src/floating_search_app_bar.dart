@@ -470,25 +470,34 @@ class FloatingSearchAppBarState extends ImplicitlyAnimatedWidgetState<
       scrollAnimation.value,
     )!;
 
-    final bar = GestureDetector(
-      onTap: () {
-        if (isOpen) {
-          hasFocus = !hasFocus;
-          _input.moveCursorToEnd();
-        } else if (!isAppBar) {
-          isOpen = true;
-        }
-      },
-      child: Material(
-        color: backgroundColor,
-        elevation: elevation,
-        child: Container(
-          height: style.height + statusBarHeight,
-          padding: style.padding.add(EdgeInsets.only(top: statusBarHeight)),
-          child: _buildInputAndActions(),
-        ),
-      ),
-    );
+    final bar = Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: GestureDetector(
+          onTap: () {
+            if (isOpen) {
+              hasFocus = !hasFocus;
+              _input.moveCursorToEnd();
+            } else if (!isAppBar) {
+              isOpen = true;
+            }
+          },
+          child: Material(
+            key: ValueKey("app bar highests"),
+            shape: BeveledRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(
+                  6)), //TODO Make this come from the user settings
+              side: BorderSide(color: Colors.black, width: 1),
+            ),
+            color: backgroundColor,
+            elevation: elevation,
+            child: Container(
+              color: Colors.transparent,
+              height: style.height + statusBarHeight,
+              padding: style.padding.add(EdgeInsets.only(top: statusBarHeight)),
+              child: _buildInputAndActions(),
+            ),
+          ),
+        ));
 
     return WillPopScope(
       onWillPop: () async {

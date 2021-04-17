@@ -427,9 +427,6 @@ class FloatingSearchBarState extends ImplicitlyAnimatedWidgetState<
     curve: Curves.easeInOut,
   );
 
-  late Widget body;
-  final ValueNotifier<int> rebuilder = ValueNotifier(0);
-
   late FloatingSearchBarTransition transition =
       widget.transition ?? SlideFadeFloatingSearchBarTransition();
   late var _scrollController = widget.scrollController ?? ScrollController();
@@ -462,7 +459,9 @@ class FloatingSearchBarState extends ImplicitlyAnimatedWidgetState<
   }
 
   void rebuild() {
-    rebuilder.value++;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   double _offset = 0.0;
@@ -579,24 +578,22 @@ class FloatingSearchBarState extends ImplicitlyAnimatedWidgetState<
   @override
   Widget build(BuildContext context) {
     transition.searchBar = this;
-    body = widget.builder(context, animation);
 
     final searchBar = SizedBox.expand(
       child: WillPopScope(
         onWillPop: _onPop,
         child: NotificationListener<ScrollNotification>(
           onNotification: _onBuilderScroll,
-          child: ValueListenableBuilder(
-            valueListenable: rebuilder,
-            builder: (context, __, _) => AnimatedBuilder(
-              animation: animation,
-              builder: (context, _) => Stack(
+          child: AnimatedBuilder(
+            animation: animation,
+            builder: (context, _) {
+              return Stack(
                 children: <Widget>[
                   _buildBackdrop(),
                   _buildSearchBar(),
                 ],
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -631,23 +628,28 @@ class FloatingSearchBarState extends ImplicitlyAnimatedWidgetState<
       child: Padding(
         padding: transition.lerpMargin(),
         child: Material(
+          key: ValueKey("bar Semantics"),
+
+          // shape: BeveledRectangleBorder(
+          //   borderRadius:
+          //       borderRadius, //TODO Make this come from the user settings
+          //   side: BorderSide(color: Colors.black, width: 1),
+          // ),
           elevation: transition.lerpElevation(),
           shadowColor: style.shadowColor,
-          borderRadius: borderRadius,
+          // borderRadius: borderRadius,
           child: Container(
+            color: Colors.transparent,
             width: transition.lerpWidth(),
             height: transition.lerpHeight(),
             padding: EdgeInsets.only(top: padding.top, bottom: padding.bottom),
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: transition.lerpBackgroundColor(),
-              border: Border.fromBorderSide(style.border),
-              borderRadius: borderRadius,
-            ),
-            child: ClipRRect(
-              borderRadius: borderRadius,
-              child: _buildInnerBar(),
-            ),
+            // decoration: BoxDecoration(
+            //   color: transition.lerpBackgroundColor(),
+            //   border: Border.fromBorderSide(style.border),
+            //   borderRadius: borderRadius,
+            // ),
+            child: _buildInnerBar(),
           ),
         ),
       ),
@@ -733,11 +735,19 @@ class FloatingSearchBarState extends ImplicitlyAnimatedWidgetState<
               ),
             ),
           Material(
+            // shape: BeveledRectangleBorder(
+            //   borderRadius: BorderRadius.all(Radius.circular(
+            //       6)), //TODO Make this come from the user settings
+            //   side: BorderSide(color: Colors.black, width: 1),
+            // ),
+            //
+            key: ValueKey("bar Stack"),
+
             elevation: transition.lerpInnerElevation(),
             shadowColor: style.shadowColor,
             child: Container(
+              color: Colors.transparent,
               height: style.height,
-              color: transition.lerpBackgroundColor(),
               alignment: Alignment.topCenter,
               child: Stack(
                 alignment: Alignment.center,
@@ -765,7 +775,7 @@ class FloatingSearchBarState extends ImplicitlyAnimatedWidgetState<
         controller: _scrollController,
         padding: widget.scrollPadding,
         physics: widget.physics,
-        child: this.body,
+        child: widget.builder(context, animation),
       ),
     );
 
